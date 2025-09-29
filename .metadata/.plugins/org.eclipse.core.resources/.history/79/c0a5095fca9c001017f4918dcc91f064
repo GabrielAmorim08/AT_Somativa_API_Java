@@ -1,0 +1,8 @@
+package sisrh.seguranca;
+
+import java.util.*;
+import io.jsonwebtoken.*;
+
+public class RBAC {
+	private static Map<String, Map<String, String>> rbac = new HashMap<>();
+}

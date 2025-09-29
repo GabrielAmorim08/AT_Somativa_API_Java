@@ -36,12 +36,12 @@ public class Banco {
 	static private void criarConexaoBanco() {
 		try {
 			conn = DriverManager.getConnection("jdbc:hsqldb:file:C:\\workspace\\sisrh_db\\rh_db", "SA", "");
-			System.out.println("Conexão ao banco BANCO_SISRH.........[OK]");
+			System.out.println("Conexï¿½o ao banco BANCO_SISRH.........[OK]");
 		} catch (SQLException e) {
-			System.out.println("Conexão ao banco BANCO_SISRH.........[NOK]");
+			System.out.println("Conexï¿½o ao banco BANCO_SISRH.........[NOK]");
 			if (e.getMessage().contains("lockFile")) {
 				JOptionPane.showMessageDialog(null,
-						"O banco está bloqueado \n porque o Tomcat não liberou a conexão. REINICIE O TOMCAT");
+						"O banco estï¿½ bloqueado \n porque o Tomcat nï¿½o liberou a conexï¿½o. REINICIE O TOMCAT");
 
 			} else {
 				e.printStackTrace();
@@ -62,10 +62,29 @@ public class Banco {
 
 	// ---------------------- LISTAGENS ----------------------
 
-	public static List<Empregado> listarEmpregados() throws Exception {
+	public static List<Empregado> listarEmpregados(Boolean  ativo) throws Exception {
 		List<Empregado> lista = new ArrayList<Empregado>();
 		Connection conn = Banco.getConexao();
-		String sql = "SELECT * FROM Empregado";
+		String sql = "";
+		
+		if(ativo == null)
+		{
+			sql = "SELECT * FROM Empregado";
+		}
+		
+		if(ativo != null)
+		{
+			if(ativo)
+			{
+				sql = "SELECT * FROM Empregado "
+						+ "WHERE desligamento IS NULL";
+			}
+			else
+			{
+				sql = "SELECT * FROM Empregado "
+						+ "WHERE desligamento IS NOT NULL";				
+			}
+		}
 		PreparedStatement prepStmt = conn.prepareStatement(sql);
 		ResultSet rs = prepStmt.executeQuery();
 		while (rs.next()) {
@@ -100,12 +119,23 @@ public class Banco {
 		prepStmt.close();
 		return lista;
 	}
-
-	public static List<Solicitacao> listarSolicitacoes() throws Exception {
+	public static List<Solicitacao> listarSolicitacoes(String usuario) throws Exception {
 		List<Solicitacao> lista = new ArrayList<Solicitacao>();
 		Connection conn = Banco.getConexao();
 		String sql = "SELECT * FROM Solicitacao";
-		PreparedStatement prepStmt = conn.prepareStatement(sql);
+		
+		if(usuario != null && !usuario.isEmpty())
+		{
+			sql = "SELECT * FROM Solicitacao as s\r\n"
+					+ "INNER JOIN Empregado as e ON s.matricula = e.matricula\r\n"
+					+ "INNER JOIN Usuario as u ON e.matricula = u.matricula\r\n"
+					+ "WHERE u.nome = ?";
+		}
+		PreparedStatement prepStmt = conn.prepareStatement(sql);		
+		
+		if (usuario != null && !usuario.isEmpty()) {
+	        prepStmt.setString(1, usuario);
+	    }
 		ResultSet rs = prepStmt.executeQuery();
 		while (rs.next()) {
 			Integer id = rs.getInt("id");

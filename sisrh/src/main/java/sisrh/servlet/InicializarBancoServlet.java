@@ -18,7 +18,7 @@ import sisrh.dto.Solicitacao;
 import sisrh.dto.Usuario;
 
 /**
- * Classe para Inicialiação do Banco de Dados
+ * Classe para Inicialiaï¿½ï¿½o do Banco de Dados
  * @author pucpr
  *
  */
@@ -28,26 +28,26 @@ public class InicializarBancoServlet extends HttpServlet {
 
 	@Override
 	public void init() throws ServletException {
-		System.out.println("----- SISRH Inicialização ----");
-		System.out.println("Inicialização!");
+		System.out.println("----- SISRH Inicializaï¿½ï¿½o ----");
+		System.out.println("Inicializaï¿½ï¿½o!");
 		carregarEstruturaDados();
 		super.init();
 	}
 
 	/**
-	 * Se não existir tabelas, criar a partir do script sql
+	 * Se nï¿½o existir tabelas, criar a partir do script sql
 	 */
 	private void carregarEstruturaDados() {
 		try {						
 			Banco.executarScript(carregarScript("db_sisrh_estrutura.sql"));			
-			List<Empregado> empregados = Banco.listarEmpregados();			
+			List<Empregado> empregados = Banco.listarEmpregados(null);			
 			if (empregados.isEmpty()) {		
 				Banco.executarScript(carregarScript("db_sisrh_dados.sql"));				
 				System.out.println("Carga inicial de dados...............[OK]");
-				empregados = Banco.listarEmpregados();				
+				empregados = Banco.listarEmpregados(null);				
 			}			
 			List<Usuario> usuarios = Banco.listarUsuarios();
-			List<Solicitacao> solicitacoes = Banco.listarSolicitacoes();
+			List<Solicitacao> solicitacoes = Banco.listarSolicitacoes(null);
 			System.out.println("Testar consultas ao banco................");
 			System.out.println("->\t ["+ empregados.size() + "] empregados.");
 			System.out.println("->\t ["+ usuarios.size() + "] usuarios.");
@@ -61,7 +61,7 @@ public class InicializarBancoServlet extends HttpServlet {
 
 	
 	/**
-	 * Carrega e retorna conteúdo de um arquivo .sql
+	 * Carrega e retorna conteï¿½do de um arquivo .sql
 	 * 
 	 * @param file
 	 * @return
